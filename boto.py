@@ -3,9 +3,10 @@ This is the template server side for ChatBot
 """
 from bottle import route, run, template, static_file, request
 import json
+import random
 
 string_types = ['question', 'pstatement', 'botstatement', "nonsense", "unknown", "swears", "name"]
-
+animation = ""
 
 def sentence_type(string):
     if is_name(string) == True:
@@ -16,10 +17,10 @@ def sentence_type(string):
         current_type = string_types[3]
     elif "?" in string[-1]:
         current_type = string_types[0]
+    elif is_bstatement(string) == True:
+        current_type = string_types[2]
     elif string[0] == "i" or string[1] == "i":
         current_type = string_types[1]
-    elif string[0] == "you" or string[1] == "you":
-        current_type = string_types[2]
     else:
         current_type = string_types[4]
     return current_type
@@ -37,28 +38,18 @@ def is_name(str):
             return True
 
 
-def evaluator(str, value):
-    print(value)
-    print(len(str))
-    print(str)
-    if value == 'name' or 'I' in str and len(str) < 4:
-        return "Pleased to meet you"
-    elif value == "swears":
-        return swear_bad_response
-    elif value == "nonsense":
-        return nonsense_resp
+def is_bstatement(str):
+    str_new = []
+    for s in str:
+        s_new = s.replace("?", "").replace("!", "")
+        str_new.append(s_new)
+    if ('you' or 'your') in str_new:
+        return True
     else:
-        return_list = []
-        return_list.append(is_weather(str, value))
-        return_list.append(is_news(str, value))
-        print(return_list)
-        for r in return_list:
-            if r != None:
-                return r
-
+        return False
 
 swear_bad_response = "Please avoid using profane language with me"
-swear_words = ["fuck", "shit", "damn", "cunt", "dick", "ass", "bitch"]
+swear_words = ["fuck", "shit", "damn", "cunt", "dick", "ass", "bitch", 'cock', 'pussy', 'douchebag', 'douche']
 
 
 def is_swear(msg):
@@ -73,59 +64,143 @@ def determines(msg, wordbank):
         new_s = s.replace("?", "")
         new_msg.append(new_s)
     for w in wordbank:
-            if w in new_msg:
-                print(new_msg)
-                return True
-
+        if w in new_msg:
+            print(new_msg)
+            return True
 
 
 news_words = ["news", "world", "happened", "event", "fake", "cnn", "fox", "msnbc", "abc", "nbc", "cbs", "global",
-              "situation", "politics", "business", "sports", "info", "information"]
+              "situation", "politics", "business", "sports", "info", "information", "national", "local"]
 news_resp = "Sorry, I have not been paying attention recently..."
 news_question = "I am glad you asked. But seriously try googling it"
 news_avoid = "I am not at liberty to say"
-news_statement = "Your feelings are duly noted"
+news_statement = "Your feelings are duly noted. How can I help you?"
 
 
 def is_news(msg, types):
     news = determines(msg, news_words)
+    global animation
     if news == True:
         for s in msg:
-            if "find" or "search" or "get" in s and types == 'question':
-                print('1')
+            if (s == "find" or s == "search" or s == "get") and types == 'question':
+                animation = "giggling"
                 return news_question
-            elif "your" or "opinion" or "think" in s and types == 'question':
-                print('2')
+            elif (s == "your" or s == "opinion" or s == "think") and types == 'question':
+                animation = "afraid"
                 return news_avoid
-            elif "like" or "hate" or "love" or "dislike" or "feel" in s and types == 'pstatement':
-                print('3')
+            elif (s == "like" or s == "hate" or s == "love" or s == "dislike" or s == "feel") and types == 'pstatement':
+                animation = "ok"
                 return news_statement
-            elif "want" and types == 'pstatement':
-                print('4')
+            elif s == "want" and types == 'pstatement':
+                animation = "ok"
                 return news_question
-            else:
-                print('5')
-                return news_resp
+        animation = 'bored'
+        return news_resp
 
 
-weather_words = ["weather", "temperature", "temp", "celcius", "fahrenheit", "season", "sun", "moon", "sunny", "cloud",
+weather_words = ["weather", "temperature", "temp", "celcius", "fahrenheit", "season", 'hot', 'cold', "sun", "moon", "sunny", "cloud",
                  "cloudy", "rain", "rainy", "snow", "gray", "storm", "stormy", "storms"]
-weather_what = "Very hot and humid where I am. Summer right... late 20s or low 30s"
-weather_find = "Google has an api for this - you should check it out"
-weather_like = "I guess its nice out. I am in an air-conditioned room"
+weather_what = "Very hot where I am. Summer right... late 20s or low 30s but still quite a blast!"
+weather_find = "Google has an api for this - you should go check there"
+weather_like = "I am in an air-conditioned room, so I have no opinion"
+weather_neutral = "Maybe. Check online to be sure."
 
 
 def is_weather(msg, types):
     weather = determines(msg, weather_words)
+    global animation
     if weather == True:
         for s in msg:
-            if 'what' or 'now' or 'today' or 'give' or 'outside' in s and types == 'question':
+            print(s)
+            if (s == 'what' or s == "what's" or s == 'now' or s == 'today' or s == 'give' or s == 'outside') and types == 'question':
+                animation = "dancing"
                 return weather_what
-            elif 'like' or 'nice' or 'hate' or "feel" in s:
+            elif (s == 'like' or s == 'nice' or s == 'hate' or s == "feel") and types == 'pstatement':
+                animation = "ok"
                 return weather_like
-            else:
+            elif (s == "where" or s == "find" or s == "see" or s == 'look') and types == 'question':
+                animation = "takeoff"
                 return weather_find
+        return weather_neutral
 
+pet_words = ['dog', 'cat', 'snake', 'pet', 'pets', 'puppy', 'puppies', 'dogs', 'cats', 'kittens', 'kitty', 'leash' 'collar', 'kitten', 'fur', 'fuzzy']
+pet_want = "You got me thinking about owning a pet - too bad bots cannot do that"
+pet_cute = "I think animals are adorable!"
+pet_hate = "I don't understand, they are so cute!"
+
+def is_pet(msg, types):
+    pets = determines(msg, pet_words)
+    global animation
+    if pets == True:
+        for s in msg:
+            if (types == 'question' or types == "pstatement") and (s == "own" or s == "have" or s == "want"):
+                animation = 'heartbroke'
+                return pet_want
+            elif (types == 'pstatement' or 'unknown') and s in insults:
+                animation = "confused"
+                return pet_hate
+        animation = "inlove"
+        return pet_cute
+
+
+
+insults = ['suck', 'blow', 'stupid', 'dumb', 'jerk', 'meanie', 'evil', 'slimey', 'slimeball', 'coward', 'boring',
+           'lame', 'lazy', 'illiterate', 'primitive', 'hate']
+compliments = ['cool', 'best', 'rule', 'smart', 'amazing', 'wonderful', 'love', 'like', 'great', 'nice', 'pleasant',
+               'interesting']
+rw_bstatement_pos = ['Excellent!', 'Awesome', 'I appreciate it', 'lovely', "I love it", 'thank you']
+re_bstatement_neg = ["I'm sorry you feel that way", 'your attitude needs work',
+                     "what's wrong with you?", 'stop being so negative', 'why are you like this?', 'stop it']
+rw_questions = ["I don't know", "I cannot help you", "I don't understand the question",
+                "Can't say, I am not omniscent", "Not sure", "Try another question"]
+rw_generic = ['whatever', "that's cool", "and...?", 'tell me more', 'gnarly', 'sounds interesting']
+
+
+def is_random(msg, value):
+    global animation
+    for s in msg:
+        if s in insults and (value == 'botstatement' or value ==  'pstatement' or value == 'question'):
+            bot_resp = random.choice(re_bstatement_neg)
+            animation = "crying"
+            return bot_resp
+        elif value == 'bstatement' and s in compliments:
+            bot_resp = random.choice(rw_bstatement_pos)
+            animation = "inlove"
+            return bot_resp
+        elif value == 'question':
+            animation = "ok"
+            bot_resp = random.choice(rw_questions)
+            return bot_resp
+    bot_resp = random.choice(rw_generic)
+    return bot_resp
+
+def evaluator(str, value):
+    print(value)
+    print(len(str))
+    print(str)
+    global animation
+    if value == "swears":
+        animation = "no"
+        return swear_bad_response
+    elif value == 'name' and (('I' or 'my' in str) or (value == "name" and len(str) < 4)):
+        animation  = "excited"
+        return "Pleased to meet you "
+    elif value == 'name':
+        animation = 'confused'
+        return "I do not know to whom you are referring"
+    elif value == "nonsense":
+        animation = 'confused'
+        return nonsense_resp
+    else:
+        return_list = []
+        return_list.append(is_weather(str, value))
+        return_list.append(is_news(str, value))
+        return_list.append(is_pet(str, value))
+        print(return_list)
+        for r in return_list:
+            if r != None:
+                return r
+        return is_random(str, value)
 
 @route('/', method='GET')
 def index():
@@ -140,7 +215,7 @@ def chat():
     print(type)
     response = evaluator(string, type)
     print(response)
-    return json.dumps({"animation": "inlove", "msg": response})
+    return json.dumps({"animation": animation, "msg": response})
 
 
 @route("/test", method='POST')
