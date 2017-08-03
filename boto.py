@@ -139,11 +139,17 @@ def is_pet(msg, types):
             elif (types == 'pstatement' or 'unknown') and s in insults:
                 animation = "confused"
                 return pet_hate
-        animation = "inlove"
+        animation = "dog"
         return pet_cute
 
 
-
+jokes = ["A guy walks into a bar and says....Ouch!", "What do you call", "My girldriend and I laugh about how competitive we are. I laugh more.",
+         "I hate russian dolls, they are so full of themselves.", "I recently decided to sell my vacuum cleaner as all it was doing was gathering dust.",
+         "I've just written a song about tortillas; actually, it’s more of a rap.", "I was at the bank the other day, and an elderly woman asked me to check her balance. So I pushed her over."
+         , "I'm great at multitasking. I can waste time, be unproductive, and procrastinate all at once.", "I would lose weight, but I hate losing.", "My girlfriend told me she was leaving me because I keep pretending to be a Transformer. I said, 'No, wait! I can change.'"
+         , "Is your refrigerator running? Cause I might vote for it.", "Standing in the park, I was wondering why a Frisbee gets larger the closer it gets. Then it hit me.",
+         "I got an odd-job man in. He was useless. Gave him a list of eight things to do and he only did numbers one, three, five and seven.",
+         "My dad said, always leave them wanting more. Ironically, that’s how he lost his job in disaster relief.", "My dad suggested I register for a donor card. He's a man after my own heart."]
 insults = ['suck', 'blow', 'stupid', 'dumb', 'jerk', 'meanie', 'evil', 'slimey', 'slimeball', 'coward', 'boring',
            'lame', 'lazy', 'illiterate', 'primitive', 'hate']
 compliments = ['cool', 'best', 'rule', 'smart', 'amazing', 'wonderful', 'love', 'like', 'great', 'nice', 'pleasant',
@@ -182,7 +188,13 @@ def evaluator(str, value):
     if value == "swears":
         animation = "no"
         return swear_bad_response
-    elif value == 'name' and (('I' or 'my' in str) or (value == "name" and len(str) < 4)):
+    elif (value == "unknown" or value == "pstatement" or value == "botstatement") or (
+        ("jokes" or "joke" or "funny") in str):
+        print('joke')
+        funny =  "You want a joke!? Here's one: " + random.choice(jokes) + "...lol get it!"
+        animation = "laughing"
+        return funny
+    elif value == 'name' and (('I' or 'my' in str) or (len(str) < 4)):
         animation  = "excited"
         return "Pleased to meet you "
     elif value == 'name':
