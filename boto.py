@@ -116,7 +116,7 @@ def is_weather(msg, types):
     if weather == True:
         for s in msg:
             print(s)
-            if (s == 'what' or s == "what's" or s == 'now' or s == 'today' or s == 'give' or s == 'outside') and types == 'question':
+            if (s == "how's" or s == 'hows' or s == 'what' or s == "what's" or s == 'now' or s == 'today' or s == 'give' or s == 'outside') and types == 'question':
                 animation = "dancing"
                 return weather_what
             elif (s == 'like' or s == 'nice' or s == 'hate' or s == "feel") and types == 'pstatement':
@@ -170,7 +170,7 @@ def is_joke(string):
     for s in string:
         if s in joke_trigger:
             return True
-        
+
 #wordbanks for jokes, insults, threats, compliments, and random responses
 jokes = ["A guy walks into a bar and says....Ouch!", "What do you call", "My girldriend and I laugh about how competitive we are. I laugh more.",
          "I hate russian dolls, they are so full of themselves.", "I recently decided to sell my vacuum cleaner as all it was doing was gathering dust.",
