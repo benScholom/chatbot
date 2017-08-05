@@ -7,7 +7,7 @@ import random
 from sys import argv
 
 #build sentence types for future analysis, like personal statements, statements to the bot, questions, name references, etc.
-string_types = ['question', 'pstatement', 'botstatement', "nonsense", "unknown", "swears", "name"]
+string_types = ['question', 'pstatement', 'botstatement', "nonsense", "unknown", "swears", "name", 'joke']
 animation = ""
 #analyze the sentence type to generate certain predetermined responses
 def sentence_type(string):
@@ -15,6 +15,8 @@ def sentence_type(string):
         current_type = string_types[6]
     elif is_swear(string) == True:
         current_type = string_types[5]
+    elif is_joke(string) == True:
+        current_type = string_types[7]
     elif len(string) < 2:
         current_type = string_types[3]
     elif "?" in string[-1]:
@@ -163,7 +165,12 @@ def is_finance(msg, value):
                 return finance_strategy
         animation = 'money'
         return finance_find
-
+#joke defininition function
+def is_joke(string):
+    for s in string:
+        if s in joke_trigger:
+            return True
+        
 #wordbanks for jokes, insults, threats, compliments, and random responses
 jokes = ["A guy walks into a bar and says....Ouch!", "What do you call", "My girldriend and I laugh about how competitive we are. I laugh more.",
          "I hate russian dolls, they are so full of themselves.", "I recently decided to sell my vacuum cleaner as all it was doing was gathering dust.",
@@ -172,6 +179,8 @@ jokes = ["A guy walks into a bar and says....Ouch!", "What do you call", "My gir
          , "Is your refrigerator running? Cause I might vote for it.", "Standing in the park, I was wondering why a Frisbee gets larger the closer it gets. Then it hit me.",
          "I got an odd-job man in. He was useless. Gave him a list of eight things to do and he only did numbers one, three, five and seven.",
          "My dad said, always leave them wanting more. Ironically, that’s how he lost his job in disaster relief.", "My dad suggested I register for a donor card. He's a man after my own heart."]
+joke_trigger = ['joke', 'jokes', 'funny']
+
 insults = ['suck', 'blow', 'stupid', 'dumb', 'jerk', 'meanie', 'evil', 'slimey', 'slimeball', 'coward', 'boring',
            'lame', 'lazy', 'illiterate', 'primitive', 'hate']
 compliments = ['cool', 'best', 'rule', 'smart', 'amazing', 'wonderful', 'love', 'like', 'great', 'nice', 'pleasant',
@@ -183,6 +192,7 @@ re_bstatement_neg = ["I'm sorry you feel that way", 'your attitude needs work',
 rw_questions = ["I don't know", "I cannot help you", "I don't understand the question",
                 "Can't say, I am not omniscent", "Not sure", "Try another question"]
 rw_generic = ['whatever', "that's cool", "and...?", 'tell me more', 'gnarly', 'sounds interesting']
+
 
 #function that determines response if not in one of the designated topics
 def is_random(msg, value):
@@ -215,7 +225,7 @@ def evaluator(str, value):
     elif value == 'question' and ("how" and 'you' and 'are') in str:
         animation = 'inlove'
         return "I am fine, how are you?"
-    elif (value == "unknown" or value == "pstatement" or value == "botstatement") and ("jokes" or "joke" or "funny") in str:
+    elif value == "joke":
         funny = "You want a joke!? Here's one: " + random.choice(jokes) + "...lol get it!"
         animation = "laughing"
         return funny
