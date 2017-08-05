@@ -4,6 +4,7 @@ This is the template server side for ChatBot
 from bottle import route, run, template, static_file, request
 import json
 import random
+from sys import argv
 
 #build sentence types for future analysis, like personal statements, statements to the bot, questions, name references, etc.
 string_types = ['question', 'pstatement', 'botstatement', "nonsense", "unknown", "swears", "name"]
