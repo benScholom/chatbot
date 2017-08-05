@@ -15,7 +15,7 @@ def sentence_type(string):
         current_type = string_types[6]
     elif is_swear(string) == True:
         current_type = string_types[5]
-    elif len(string) < 3:
+    elif len(string) < 2:
         current_type = string_types[3]
     elif "?" in string[-1]:
         current_type = string_types[0]
@@ -215,8 +215,7 @@ def evaluator(str, value):
     elif value == 'question' and ("how" and 'you' and 'are') in str:
         animation = 'inlove'
         return "I am fine, how are you?"
-    elif (value == "unknown" or value == "pstatement" or value == "botstatement") and (
-        ("jokes" or "joke" or "funny") in str):
+    elif (value == "unknown" or value == "pstatement" or value == "botstatement") and ("jokes" or "joke" or "funny") in str:
         funny =  "You want a joke!? Here's one: " + random.choice(jokes) + "...lol get it!"
         animation = "laughing"
         return funny
