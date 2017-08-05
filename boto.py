@@ -216,7 +216,7 @@ def evaluator(str, value):
         animation = 'inlove'
         return "I am fine, how are you?"
     elif (value == "unknown" or value == "pstatement" or value == "botstatement") and ("jokes" or "joke" or "funny") in str:
-        funny =  "You want a joke!? Here's one: " + random.choice(jokes) + "...lol get it!"
+        funny = "You want a joke!? Here's one: " + random.choice(jokes) + "...lol get it!"
         animation = "laughing"
         return funny
     elif value == 'name' and (('I' or 'my' in str) or (len(str) < 4)):
