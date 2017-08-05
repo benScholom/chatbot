@@ -116,7 +116,7 @@ def is_weather(msg, types):
     if weather == True:
         for s in msg:
             print(s)
-            if (s == "how's" or s == 'hows' or s == 'what' or s == "what's" or s == 'now' or s == 'today' or s == 'give' or s == 'outside') and types == 'question':
+            if (s == "how's" or s == 'how' or s == 'what' or s == "what's" or s == 'now' or s == 'today' or s == 'give' or s == 'outside') and types == 'question':
                 animation = "dancing"
                 return weather_what
             elif (s == 'like' or s == 'nice' or s == 'hate' or s == "feel") and types == 'pstatement':
