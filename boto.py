@@ -5,9 +5,10 @@ from bottle import route, run, template, static_file, request
 import json
 import random
 
+#build sentence types for future analysis, like personal statements, statements to the bot, questions, name references, etc.
 string_types = ['question', 'pstatement', 'botstatement', "nonsense", "unknown", "swears", "name"]
 animation = ""
-
+#analyze the sentence type to generate certain predetermined responses
 def sentence_type(string):
     if is_name(string) == True:
         current_type = string_types[6]
@@ -25,19 +26,19 @@ def sentence_type(string):
         current_type = string_types[4]
     return current_type
 
-
+#response for when the user is talking nonsense
 nonsense_resp = "Please elaborate"
-
+#names table for use identifying names
 names = ['ben', 'daniel', 'josh', 'nath', 'tanya', 'sylvie', 'lorine', 'rifat', 'yan', 'deborah', 'lior', 'guy',
          'lauren', 'gilad', 'roni', 'yael', 'gideon', 'omer']
 
-
+#function to determine what is a name
 def is_name(str):
     for w in names:
         if w in str:
             return True
 
-
+#function to determine what is a statement about the bot
 def is_bstatement(str):
     str_new = []
     for s in str:
@@ -47,17 +48,17 @@ def is_bstatement(str):
         return True
     else:
         return False
-
+#swear words response and bank
 swear_bad_response = "Please avoid using profane language with me"
 swear_words = ["fuck", "shit", "damn", "cunt", "dick", "ass", "bitch", 'cock', 'pussy', 'douchebag', 'douche']
 
-
+#determine if a swear has been used
 def is_swear(msg):
     for s in msg:
         if s in swear_words:
             return True
 
-
+#general function to determine whether a certain topic is being disucessed
 def determines(msg, wordbank):
     new_msg = []
     for s in msg:
@@ -68,7 +69,7 @@ def determines(msg, wordbank):
             print(new_msg)
             return True
 
-
+#news topic word bank, responses
 news_words = ["news", "world", "happened", "event", "fake", "cnn", "fox", "msnbc", "abc", "nbc", "cbs", "global",
               "situation", "politics", "business", "sports", "info", "information", "national", "local"]
 news_resp = "Sorry, I have not been paying attention recently..."
@@ -76,7 +77,7 @@ news_question = "I am glad you asked. But seriously try googling it"
 news_avoid = "I am not at liberty to say"
 news_statement = "Your feelings are duly noted. How can I help you?"
 
-
+#function to identify whether the user statement is about news
 def is_news(msg, types):
     news = determines(msg, news_words)
     global animation
@@ -97,7 +98,7 @@ def is_news(msg, types):
         animation = 'bored'
         return news_resp
 
-
+#weather topic word bank and responses
 weather_words = ["weather", "temperature", "temp", "celcius", "fahrenheit", "season", 'hot', 'cold', "sun", "moon", "sunny", "cloud",
                  "cloudy", "rain", "rainy", "snow", "gray", "storm", "stormy", "storms"]
 weather_what = "Very hot where I am. Summer right... late 20s or low 30s but still quite a blast!"
@@ -105,7 +106,7 @@ weather_find = "Google has an api for this - you should go check there"
 weather_like = "I am in an air-conditioned room, so I have no opinion"
 weather_neutral = "Maybe. Check online to be sure."
 
-
+#determines if the sentence is in the weather category
 def is_weather(msg, types):
     weather = determines(msg, weather_words)
     global animation
@@ -122,12 +123,12 @@ def is_weather(msg, types):
                 animation = "takeoff"
                 return weather_find
         return weather_neutral
-
+#pet topic word bank and resposes
 pet_words = ['dog', 'cat', 'snake', 'pet', 'pets', 'puppy', 'puppies', 'dogs', 'cats', 'kittens', 'kitty', 'leash' 'collar', 'kitten', 'fur', 'fuzzy']
 pet_want = "You got me thinking about owning a pet - too bad bots cannot do that"
 pet_cute = "I think animals are adorable!"
 pet_hate = "I don't understand, they are so cute!"
-
+#pet definition function
 def is_pet(msg, types):
     pets = determines(msg, pet_words)
     global animation
@@ -141,8 +142,28 @@ def is_pet(msg, types):
                 return pet_hate
         animation = "dog"
         return pet_cute
+#finance topic word bank and reponses
+finance_words = ['entreprenuer', "entreprenuership", 'stock', 'stocks', 'bonds', 'bond', 'market', 'trade', 'trading', 'call', 'put', 'futures',
+                 'exchange', 'nyse', 'dow', 'nasdaq', 'money', 'currency', 'invest', 'investing', 'investment']
+finance_info = "Tech assets are going sky high and are constantly in demand! Always look to technology..."
+finance_strategy = 'If you want to make money, you should probably start your own business'
+finance_find = 'google is your friend for more information and analysis on financial markets'
+#finance definition function
+def is_finance(msg, value):
+    finance = determines(msg, finance_words)
+    global animation
+    if finance == True:
+        for s in msg:
+            if (s=="should" or 'how') and value == 'question':
+                animation = "takeoff"
+                return finance_info
+            elif s == 'want' and value == 'pstatement':
+                animation = 'money'
+                return finance_strategy
+        animation = 'money'
+        return finance_find
 
-
+#wordbanks for jokes, insults, threats, compliments, and random responses
 jokes = ["A guy walks into a bar and says....Ouch!", "What do you call", "My girldriend and I laugh about how competitive we are. I laugh more.",
          "I hate russian dolls, they are so full of themselves.", "I recently decided to sell my vacuum cleaner as all it was doing was gathering dust.",
          "I've just written a song about tortillas; actually, it’s more of a rap.", "I was at the bank the other day, and an elderly woman asked me to check her balance. So I pushed her over."
@@ -154,6 +175,7 @@ insults = ['suck', 'blow', 'stupid', 'dumb', 'jerk', 'meanie', 'evil', 'slimey',
            'lame', 'lazy', 'illiterate', 'primitive', 'hate']
 compliments = ['cool', 'best', 'rule', 'smart', 'amazing', 'wonderful', 'love', 'like', 'great', 'nice', 'pleasant',
                'interesting']
+threats = ['kill', 'hurt', 'maim', 'destroy', 'hit']
 rw_bstatement_pos = ['Excellent!', 'Awesome', 'I appreciate it', 'lovely', "I love it", 'thank you']
 re_bstatement_neg = ["I'm sorry you feel that way", 'your attitude needs work',
                      "what's wrong with you?", 'stop being so negative', 'why are you like this?', 'stop it']
@@ -161,11 +183,15 @@ rw_questions = ["I don't know", "I cannot help you", "I don't understand the que
                 "Can't say, I am not omniscent", "Not sure", "Try another question"]
 rw_generic = ['whatever', "that's cool", "and...?", 'tell me more', 'gnarly', 'sounds interesting']
 
-
+#function that determines response if not in one of the designated topics
 def is_random(msg, value):
     global animation
     for s in msg:
-        if s in insults and (value == 'botstatement' or value ==  'pstatement' or value == 'question'):
+        if s in threats and (value == 'pstatement' or value == 'botstatement'):
+            bot_resp = random.choice(re_bstatement_neg)
+            animation = 'afraid'
+            return bot_resp
+        elif s in insults and (value == 'botstatement' or value ==  'pstatement' or value == 'question'):
             bot_resp = random.choice(re_bstatement_neg)
             animation = "crying"
             return bot_resp
@@ -179,18 +205,17 @@ def is_random(msg, value):
             return bot_resp
     bot_resp = random.choice(rw_generic)
     return bot_resp
-
+#grand evaluation function which determines response based on user sentence and all word banks
 def evaluator(str, value):
-    print(value)
-    print(len(str))
-    print(str)
     global animation
     if value == "swears":
         animation = "no"
         return swear_bad_response
-    elif (value == "unknown" or value == "pstatement" or value == "botstatement") or (
+    elif value == 'question' and ("how" and 'you' and 'are') in str:
+        animation = 'inlove'
+        return "I am fine, how are you?"
+    elif (value == "unknown" or value == "pstatement" or value == "botstatement") and (
         ("jokes" or "joke" or "funny") in str):
-        print('joke')
         funny =  "You want a joke!? Here's one: " + random.choice(jokes) + "...lol get it!"
         animation = "laughing"
         return funny
@@ -208,25 +233,24 @@ def evaluator(str, value):
         return_list.append(is_weather(str, value))
         return_list.append(is_news(str, value))
         return_list.append(is_pet(str, value))
+        return_list.append(is_finance(str,value))
         print(return_list)
         for r in return_list:
             if r != None:
                 return r
         return is_random(str, value)
-
+#html file
 @route('/', method='GET')
 def index():
     return template("chatbot.html")
 
-
+#takes user input and runs above functions to determine response
 @route("/chat", method='POST')
 def chat():
     user_message = request.POST.get('msg')
     string = user_message.lower().split(" ")
     type = sentence_type(string)
-    print(type)
     response = evaluator(string, type)
-    print(response)
     return json.dumps({"animation": animation, "msg": response})
 
 
@@ -235,7 +259,7 @@ def chat():
     user_message = request.POST.get('msg')
     return json.dumps({"animation": "inlove", "msg": user_message})
 
-
+#static files
 @route('/js/<filename:re:.*\.js>', method='GET')
 def javascripts(filename):
     return static_file(filename, root='js')
