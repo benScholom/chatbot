@@ -222,7 +222,7 @@ def evaluator(str, value):
     if value == "swears":
         animation = "no"
         return swear_bad_response
-    elif (value == 'question' and 'pstatement') and ("how" and 'you' and 'are') in str:
+    elif (value == 'question' or value == 'pstatement') and ("how" and 'you' and 'are') in str:
         animation = 'inlove'
         return "I am fine, how are you?"
     elif value == "joke":
